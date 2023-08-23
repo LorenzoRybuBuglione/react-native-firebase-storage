@@ -6,18 +6,10 @@ import { NovoPostBotao } from "../../componentes/NovoPostBotao";
 import { pegarPostsTempoReal } from "../../servicos/firestore";
 import estilos from "./estilos";
 
-import { storage } from "../../config/firebase";
-import { ref, getDownloadURL } from "firebase/storage";
-
 export default function Principal({ navigation }) {
   const [posts, setPosts] = useState([]);
 
   useEffect(() => {
-    const imagmRef = ref(storage, "moon.jpeg");
-    getDownloadURL(imagmRef).then((url) => {
-      console.log(url);
-    });
-
     pegarPostsTempoReal(setPosts);
   }, []);
 
