@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { View, Text, TextInput, ScrollView, TouchableOpacity } from "react-native";
+import { View, Text, TextInput, ScrollView, TouchableOpacity, SafeAreaView } from "react-native";
 import { salvarPost, atualizarPost, deletarPost } from "../../servicos/firestore";
 import estilos from "./estilos";
 import { entradas } from "./entradas";
@@ -29,7 +29,7 @@ export default function Post({ navigation, route }) {
     }
 
     return (
-        <View style={estilos.container}>
+        <SafeAreaView style={estilos.container}>
             <View style={estilos.containerTitulo}>
                 <Text style={estilos.titulo}>{item ? "Editar post" : "Novo Post"}</Text>
                 <IconeClicavel 
@@ -65,6 +65,6 @@ export default function Post({ navigation, route }) {
             <TouchableOpacity style={estilos.botao} onPress={salvar} disabled={desabilitarEnvio}>
                 <Text style={estilos.textoBotao}>Salvar</Text>
             </TouchableOpacity>
-        </View>
+        </SafeAreaView>
     );
 }
