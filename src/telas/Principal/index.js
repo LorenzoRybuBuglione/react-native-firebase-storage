@@ -20,7 +20,6 @@ export default function Principal({ navigation }) {
         {posts?.map((item) => (
           <CartaoInfo
             key={item.id}
-            imagem={item.imagem}
             titulo={item.titulo}
             fonte={item.fonte}
             descricao={item.descricao}

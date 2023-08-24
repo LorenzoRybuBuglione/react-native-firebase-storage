@@ -6,6 +6,7 @@ import {
   ScrollView,
   TouchableOpacity,
   SafeAreaView,
+  Image,
 } from "react-native";
 import {
   salvarPost,
@@ -17,6 +18,9 @@ import { entradas } from "./entradas";
 import { alteraDados } from "../../utils/comum";
 import { IconeClicavel } from "../../componentes/IconeClicavel";
 import { salvarImagem } from "../../servicos/storage";
+import * as ImagePicker from "expo-image-picker";
+
+import uploadImagemPadrao from "../../assets/upload.jpeg";
 
 const imagemGalaxia =
   "https://img.olhardigital.com.br/wp-content/uploads/2022/01/via-lactea-filamento-hidrogenio-capa.jpg";
@@ -31,18 +35,35 @@ export default function Post({ navigation, route }) {
     descricao: item?.descricao || "",
     imagemUrl: item?.imagemUrl || null,
   });
+  const [imagem, setImagem] = useState(null);
 
   async function salvar() {
     setDesabilitarEnvio(true);
 
     if (item) {
       await atualizarPost(item.id, post);
-      navigation.goBack();
-    } else {
-      const postId = await salvarPost({ ...post, imagemUrl: "" });
-      navigation.goBack();
-      const url = await salvarImagem(imagemGalaxia, "galaxia");
-      await atualizarPost(postId, { imagemUrl: url });
+      return navigation.goBack();
+    }
+    const postId = await salvarPost({ ...post, imagemUrl: "" });
+    navigation.goBack();
+
+    if (imagem != null) {
+      const url = await salvarImagem(imagem, postId);
+      await atualizarPost(postId, { ...post, imagemUrl: url });
+    }
+  }
+
+  async function selecionarImagem() {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      quality: 1,
+    });
+
+    console.log(result.assets[0]);
+
+    if (!result.canceled) {
+      setImagem(result.assets[0].uri);
     }
   }
 
@@ -77,6 +98,13 @@ export default function Post({ navigation, route }) {
             />
           </View>
         ))}
+
+        <TouchableOpacity style={estilos.imagem} onPress={selecionarImagem}>
+          <Image
+            source={imagem ? { uri: imagem } : uploadImagemPadrao}
+            style={estilos.imagem}
+          />
+        </TouchableOpacity>
       </ScrollView>
 
       <TouchableOpacity
