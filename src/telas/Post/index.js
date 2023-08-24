@@ -16,8 +16,7 @@ import estilos from "./estilos";
 import { entradas } from "./entradas";
 import { alteraDados } from "../../utils/comum";
 import { IconeClicavel } from "../../componentes/IconeClicavel";
-import { storage } from "../../config/firebase";
-import { ref, uploadBytes } from "firebase/storage";
+import { salvarImagem } from "../../servicos/storage";
 
 const imagemGalaxia =
   "https://img.olhardigital.com.br/wp-content/uploads/2022/01/via-lactea-filamento-hidrogenio-capa.jpg";
@@ -30,31 +29,20 @@ export default function Post({ navigation, route }) {
     titulo: item?.titulo || "",
     fonte: item?.fonte || "",
     descricao: item?.descricao || "",
+    imagemUrl: item?.imagemUrl || null,
   });
 
   async function salvar() {
     setDesabilitarEnvio(true);
+    const url = await salvarImagem(imagemGalaxia, "galaxia");
+
     if (item) {
       await atualizarPost(item.id, post);
     } else {
-      await salvarPost(post);
+      await salvarPost({ ...post, imagemUrl: url });
     }
 
     navigation.goBack();
-  }
-
-  async function salvarImagem() {
-    const downloadImagem = await fetch(imagemGalaxia);
-    const blobImagem = await downloadImagem.blob();
-    const imagemRef = ref(storage, "posts/imagem.png");
-
-    uploadBytes(imagemRef, blobImagem)
-      .then(() => {
-        console.log("Upload feito");
-      })
-      .catch((error) => {
-        console.log(error);
-      });
   }
 
   return (

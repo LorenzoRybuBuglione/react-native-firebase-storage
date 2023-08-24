@@ -24,7 +24,7 @@ export default StyleSheet.create({
     containerTexto: {
         flexDirection: "column",
         width: "100%",
-        minHeight: 80,
+        minHeight: 70,
         backgroundColor: "#041833",
         borderBottomLeftRadius: 10,
         borderBottomRightRadius: 10,
@@ -50,4 +50,10 @@ export default StyleSheet.create({
         display: "none",
         marginBottom: 10,
     },
+    imagem: {
+        width: "100%",
+        height: 200,
+        borderTopLeftRadius: 10,
+        borderTopRightRadius: 10,
+    }
 });

@@ -7,12 +7,12 @@ export default StyleSheet.create({
         alignItems: "flex-start",
         justifyContent: "flex-start",
         paddingTop: StatusBar.currentHeight,
-        paddingHorizontal: 20,
     },
     scroll: {
         width: "100%",
         height: "100%",
         marginTop: 20,
+        paddingHorizontal: 20,
     },
     texto: {
         color: "#D9D9D9",
