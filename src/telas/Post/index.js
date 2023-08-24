@@ -34,15 +34,16 @@ export default function Post({ navigation, route }) {
 
   async function salvar() {
     setDesabilitarEnvio(true);
-    const url = await salvarImagem(imagemGalaxia, "galaxia");
 
     if (item) {
       await atualizarPost(item.id, post);
+      navigation.goBack();
     } else {
-      await salvarPost({ ...post, imagemUrl: url });
+      const postId = await salvarPost({ ...post, imagemUrl: "" });
+      navigation.goBack();
+      const url = await salvarImagem(imagemGalaxia, "galaxia");
+      await atualizarPost(postId, { imagemUrl: url });
     }
-
-    navigation.goBack();
   }
 
   return (
