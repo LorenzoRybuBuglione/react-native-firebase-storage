@@ -17,7 +17,8 @@ import estilos from "./estilos";
 import { entradas } from "./entradas";
 import { alteraDados } from "../../utils/comum";
 import { IconeClicavel } from "../../componentes/IconeClicavel";
-import { salvarImagem } from "../../servicos/storage";
+import { MenuSelecaoInferior } from "../../componentes/MenuSelecaoInferior";
+import { salvarImagem, deletarImagem } from "../../servicos/storage";
 import * as ImagePicker from "expo-image-picker";
 
 import uploadImagemPadrao from "../../assets/upload.jpeg";
@@ -35,21 +36,34 @@ export default function Post({ navigation, route }) {
     descricao: item?.descricao || "",
     imagemUrl: item?.imagemUrl || null,
   });
-  const [imagem, setImagem] = useState(null);
+  const [imagem, setImagem] = useState(item?.imagemUrl || null);
+  const [mostrarMenu, setMostrarMenu] = useState(false);
 
   async function salvar() {
     setDesabilitarEnvio(true);
 
     if (item) {
-      await atualizarPost(item.id, post);
+      await verificarAlteracaoImagem();
       return navigation.goBack();
     }
     const postId = await salvarPost({ ...post, imagemUrl: "" });
     navigation.goBack();
 
     if (imagem != null) {
-      const url = await salvarImagem(imagem, postId);
-      await atualizarPost(postId, { ...post, imagemUrl: url });
+      atualizarPostComImagem(postId);
+    }
+  }
+
+  async function atualizarPostComImagem(postId) {
+    const url = await salvarImagem(imagem, postId);
+    await atualizarPost(postId, { ...post, imagemUrl: url });
+  }
+
+  async function verificarAlteracaoImagem() {
+    if (post.imagemUrl != imagem) {
+      atualizarPostComImagem(item.id);
+    } else {
+      atualizarPost(item.id, post);
     }
   }
 
@@ -64,6 +78,17 @@ export default function Post({ navigation, route }) {
 
     if (!result.canceled) {
       setImagem(result.assets[0].uri);
+    }
+  }
+
+  async function removerImagemPost() {
+    if (!item) return;
+
+    if (deletarImagem(item.id)) {
+      await atualizarPost(item.id, {
+        imagemUrl: null,
+      });
+      navigation.goBack();
     }
   }
 
@@ -99,7 +124,10 @@ export default function Post({ navigation, route }) {
           </View>
         ))}
 
-        <TouchableOpacity style={estilos.imagem} onPress={selecionarImagem}>
+        <TouchableOpacity
+          style={estilos.imagem}
+          onPress={() => setMostrarMenu(true)}
+        >
           <Image
             source={imagem ? { uri: imagem } : uploadImagemPadrao}
             style={estilos.imagem}
@@ -114,6 +142,20 @@ export default function Post({ navigation, route }) {
       >
         <Text style={estilos.textoBotao}>Salvar</Text>
       </TouchableOpacity>
+
+      <MenuSelecaoInferior
+        setMostrarMenu={setMostrarMenu}
+        mostrarMenu={mostrarMenu}
+      >
+        <TouchableOpacity style={estilos.opcao} onPress={selecionarImagem}>
+          <Text>Adicionar foto </Text>
+          <Text>&#128247;</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={estilos.opcao} onPress={removerImagemPost}>
+          <Text>Remover foto </Text>
+          <Text>&#128465;</Text>
+        </TouchableOpacity>
+      </MenuSelecaoInferior>
     </SafeAreaView>
   );
 }
