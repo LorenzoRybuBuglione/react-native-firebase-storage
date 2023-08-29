@@ -71,6 +71,7 @@ export default function Post({ navigation, route }) {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
+      aspect: [16,9],
       quality: 1,
     });
 
@@ -84,12 +85,20 @@ export default function Post({ navigation, route }) {
   async function removerImagemPost() {
     if (!item) return;
 
-    if (deletarImagem(item.id)) {
+    if (await deletarImagem(item.id)) {
       await atualizarPost(item.id, {
         imagemUrl: null,
       });
       navigation.goBack();
     }
+  }
+
+  async function excluirPost() {
+    deletarPost(item.id);
+    if(item.imagemUrl != null) {
+      deletarImagem(item.id);
+    }
+    navigation.goBack();
   }
 
   return (
@@ -98,10 +107,7 @@ export default function Post({ navigation, route }) {
         <Text style={estilos.titulo}>{item ? "Editar post" : "Novo Post"}</Text>
         <IconeClicavel
           exibir={!!item}
-          onPress={() => {
-            deletarPost(item.id);
-            navigation.goBack();
-          }}
+          onPress={excluirPost}
           iconeNome="trash-2"
         />
       </View>
