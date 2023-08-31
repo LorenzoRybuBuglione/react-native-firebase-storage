@@ -46,7 +46,7 @@ export default function Post({ navigation, route }) {
       await verificarAlteracaoImagem();
       return navigation.goBack();
     }
-    const postId = await salvarPost({ ...post, imagemUrl: "" });
+    const postId = await salvarPost({ ...post, imagemUrl: imagem? '' : null});
     navigation.goBack();
 
     if (imagem != null) {
